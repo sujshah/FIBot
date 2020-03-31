@@ -10,3 +10,5 @@ Twitter API players linked to premier league or media attention/ also if player 
 Twitter find accounts that tip young stars - check prices from time of tweet to x months later ie backtest - find accounts manually.
 (Maybe moving average)
 
+
+https://www.api-football.com/
