@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional, Union
 
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
@@ -32,15 +33,11 @@ url = 'https://www.footballindex.co.uk'
 @dataclass(frozen=True)
 class Player(object):
     name: str
-    surname: str
-    club: str
-    nationality: str
-    position: str
-    number: int
-
-    @property
-    def __str__(self):
-        return f'{self.name} {self.surname}'
+    surname: Optional[str] = None
+    club: Optional[str] = None
+    nationality: Optional[str] = None
+    position: Optional[str] = None
+    number: Optional[Union[int, str]] = None
 
 
 class FootballIndexBot:
@@ -64,7 +61,11 @@ class FootballIndexBot:
                 attempt += 1
 
     def search(self, player: Player) -> None:
-        self.driver.get(f'{url}/search?q={player.name}+{player.surname}')
+        if player.surname is not None:
+            self.driver.get(f'{url}/search?q={player.name}+{player.surname}')
+        else:
+            self.driver.get(f'{url}/search?q={player.name}')
+
 
     def buy(self, player: Player, shares: int = 1) -> None:
         self.search(player=player)
