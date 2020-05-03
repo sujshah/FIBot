@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -27,14 +29,18 @@ CONFIRM_RESERVE_PRICE = '/html/body/div[1]/div[1]/div[1]/div/div/div[6]/button[1
 url = 'https://www.footballindex.co.uk'
 
 
+@dataclass(frozen=True)
 class Player(object):
-    def __init__(self, first, last) -> None:
-        self.first = first
-        self.last = last
+    name: str
+    surname: str
+    club: str
+    nationality: str
+    position: str
+    number: int
 
     @property
     def __str__(self):
-        return f'{self.first} {self.last}'
+        return f'{self.name} {self.surname}'
 
 
 class FootballIndexBot:
@@ -58,7 +64,7 @@ class FootballIndexBot:
                 attempt += 1
 
     def search(self, player: Player) -> None:
-        self.driver.get(f'{url}/search?q={player.first}+{player.last}')
+        self.driver.get(f'{url}/search?q={player.name}+{player.surname}')
 
     def buy(self, player: Player, shares: int = 1) -> None:
         self.search(player=player)
@@ -101,6 +107,3 @@ class FootballIndexBot:
 
 if __name__ == '__main__':
     bot = FootballIndexBot()
-    bot.login(email='example@gmail.com', password='password') #insert details
-    player = Player('Kalidou', 'Koulibaly')
-    bot.sell(player=player)
