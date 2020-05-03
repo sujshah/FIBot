@@ -54,7 +54,7 @@ def get_premier_league_players() -> Set[Player]:
 
 if __name__ == '__main__':
     players = get_premier_league_players()
-    with open('data.json', 'a+', encoding='utf-8') as f:
+    with open('data.json', 'w', encoding='utf-8') as f:
         json.dump(list(map(lambda player: player.__dict__, players)), f)
 
 
