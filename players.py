@@ -1,9 +1,8 @@
 import json
-from functools import lru_cache
 from typing import Generator, Dict, Set
 
 import requests
-from cache_to_disk import cache_to_disk
+import unidecode as unidecode
 from bs4 import BeautifulSoup
 
 from main import Player
@@ -52,10 +51,18 @@ def get_premier_league_players() -> Set[Player]:
     return result
 
 
+def get_premier_league_players_simple_from_json(file: str) -> Set[Player]:
+    with open(file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        names = (remove_accents(x['name']) for x in data)
+        surnames = (remove_accents(x['surname']) for x in data)
+    return set([Player(name, surname) for name, surname in zip(names, surnames)])
+
+
+def remove_accents(name: str) -> str:
+    if name is None: return None
+    return unidecode.unidecode(name)
+
+
 if __name__ == '__main__':
-    players = get_premier_league_players()
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(list(map(lambda player: player.__dict__, players)), f)
-
-
-
+    print(get_premier_league_players_simple_from_json('data.json'))
