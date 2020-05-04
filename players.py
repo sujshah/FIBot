@@ -1,5 +1,5 @@
 import json
-from typing import Generator, Dict, Set
+from typing import Generator, Dict, Set, Optional
 
 import requests
 import unidecode as unidecode
@@ -59,7 +59,7 @@ def get_premier_league_players_simple_from_json(file: str) -> Set[Player]:
     return set([Player(name, surname) for name, surname in zip(names, surnames)])
 
 
-def remove_accents(name: str) -> str:
+def remove_accents(name: str) -> Optional[str]:
     if name is None: return None
     return unidecode.unidecode(name)
 
