@@ -1,13 +1,22 @@
 import json
-from typing import Generator, Dict, Set, Optional
+from dataclasses import dataclass
+from typing import Generator, Dict, Set, Optional, Union
 
 import requests
 import unidecode as unidecode
 from bs4 import BeautifulSoup
 
-from main import Player
-
 url = 'https://www.premierleague.com/clubs'
+
+
+@dataclass(frozen=True)
+class Player(object):
+    name: str
+    surname: Optional[str] = None
+    club: Optional[str] = None
+    nationality: Optional[str] = None
+    position: Optional[str] = None
+    number: Optional[Union[int, str]] = None
 
 
 def get_club_by_club_number() -> Dict[int, str]:

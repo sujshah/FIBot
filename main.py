@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from typing import Optional, Union
-
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -9,12 +6,15 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from players import get_club_by_club_number, Player
+from twitter import EMAIL, PASSWORD
+
 chrome_options = Options()
 chrome_options.add_argument("--window-size=2252,1341")
 
 LOGIN = '//*[@id="root"]/div[1]/div[1]/div[1]/div/span/button'
-EMAIL = '/html/body/div[1]/div[1]/div[1]/div/div/div[2]/div/form/div[1]/div[1]/input'
-PASSWORD = '//*[@id="modal-container"]/div/div/div[2]/div/form/div[1]/div[2]/input'
+EMAIL_ENTRY = '/html/body/div[1]/div[1]/div[1]/div/div/div[2]/div/form/div[1]/div[1]/input'
+PASSWORD_ENTRY = '//*[@id="modal-container"]/div/div/div[2]/div/form/div[1]/div[2]/input'
 LOGIN_BUTTON = '//*[@id="login"]'
 BUY = '//*[@id="buy"]'
 BUY_SIZE = '//*[@id="modal-container"]/div/div/div[5]/div[3]/input'
@@ -29,16 +29,7 @@ CONFIRM_RESERVE_PRICE = '/html/body/div[1]/div[1]/div[1]/div/div/div[6]/button[1
 
 url = 'https://www.footballindex.co.uk'
 
-
-@dataclass(frozen=True)
-class Player(object):
-    name: str
-    surname: Optional[str] = None
-    club: Optional[str] = None
-    nationality: Optional[str] = None
-    position: Optional[str] = None
-    number: Optional[Union[int, str]] = None
-
+PREMIER_LEAGUE_CLUBS = set(get_club_by_club_number().values())
 
 class FootballIndexBot:
     def __init__(self) -> None:
@@ -51,8 +42,8 @@ class FootballIndexBot:
         while True:
             try:
                 self.driver.find_element_by_xpath(xpath=LOGIN).click()
-                self.driver.find_element_by_xpath(xpath=EMAIL).send_keys(email)
-                self.driver.find_element_by_xpath(xpath=PASSWORD).send_keys(password)
+                self.driver.find_element_by_xpath(xpath=EMAIL_ENTRY).send_keys(email)
+                self.driver.find_element_by_xpath(xpath=PASSWORD_ENTRY).send_keys(password)
                 self.driver.find_element_by_xpath(xpath=LOGIN_BUTTON).click()
                 break
             except NoSuchElementException as e:
@@ -65,7 +56,6 @@ class FootballIndexBot:
             self.driver.get(f'{url}/search?q={player.name}+{player.surname}')
         else:
             self.driver.get(f'{url}/search?q={player.name}')
-
 
     def buy(self, player: Player, shares: int = 1) -> None:
         self.search(player=player)
@@ -108,3 +98,4 @@ class FootballIndexBot:
 
 if __name__ == '__main__':
     bot = FootballIndexBot()
+    bot.login(email=EMAIL, password=PASSWORD)
